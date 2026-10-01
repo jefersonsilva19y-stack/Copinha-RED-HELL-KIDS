@@ -52,9 +52,11 @@ form.addEventListener("submit",async e=>{
  const f=new FormData(form),data=Object.fromEntries(f.entries());
  data.weight_kg=Number(data.weight_kg); data.consent_lgpd=true;
  data.payment_status="Pendente"; data.registration_status="Inscrição recebida";
- const {data:row,error}=await supabaseClient.from("registrations").insert(data).select("protocol").single();
- if(error){msg.textContent="Não foi possível enviar agora. Confira os dados ou fale com a organização.";return;}
- form.reset(); msg.textContent="Inscrição recebida! Seu protocolo é "+row.protocol+". Guarde este número e aguarde a confirmação da organização.";
+ const protocol="RHK-"+crypto.randomUUID().replaceAll("-","").slice(0,8).toUpperCase();
+ data.protocol=protocol;
+ const {error}=await supabaseClient.from("registrations").insert(data);
+ if(error){console.error(error);msg.textContent="Não foi possível enviar agora. Confira os dados ou fale com a organização.";return;}
+ form.reset(); msg.textContent="Inscrição recebida! Seu protocolo é "+protocol+". Guarde este número e aguarde a confirmação da organização.";
 });
 </script>
 </body></html>
