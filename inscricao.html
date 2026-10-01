@@ -1,0 +1,40 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Inscrição | 3ª Copinha Red Hell Kids</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+</head>
+<body class="admin-page">
+<header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">RH</span><span><strong>COPINHA</strong><small>RED HELL KIDS</small></span></a></header>
+<main class="section">
+<div class="container narrow">
+<span class="section-kicker">INSCRIÇÃO OFICIAL</span>
+<h2>Cadastro do atleta<br><em>3ª Copinha Red Hell Kids</em></h2>
+<p class="lead">Preencha os dados abaixo. O pagamento de R$ 50,00 já deve ter sido confirmado pela organização antes do preenchimento deste link.</p>
+<form id="registrationForm" class="registration-form">
+<div class="form-row"><label>Nome completo do atleta<input name="athlete_name" required></label><label>Data de nascimento<input name="birth_date" type="date" required></label></div>
+<div class="form-row"><label>Sexo<select name="sex" required><option value="">Selecione</option><option>Masculino</option><option>Feminino</option></select></label><label>Academia<input name="academy" required></label></div>
+<div class="form-row"><label>Faixa<select name="belt" required><option value="">Selecione</option><option>Branca</option><option>Cinza</option><option>Amarela</option><option>Laranja</option><option>Verde</option></select></label><label>Peso atual (kg)<input name="weight_kg" type="number" step="0.01" min="1" max="200" required></label></div>
+<div class="form-row"><label>Nome do responsável<input name="responsible_name" required></label><label>WhatsApp do responsável<input name="responsible_phone" required></label></div>
+<label>E-mail do responsável (opcional)<input name="responsible_email" type="email"></label>
+<label style="display:flex;gap:10px;align-items:flex-start;text-transform:none;letter-spacing:0;color:#aaa"><input name="consent_lgpd" type="checkbox" required style="width:auto;margin:3px 0 0">Declaro que sou responsável pelo atleta e autorizo o uso dos dados informados para organização desta competição.</label>
+<button class="btn btn-primary full" type="submit">Enviar inscrição <span>→</span></button>
+<div id="message" class="form-message"></div>
+</form>
+</div></main>
+<script>
+const form=document.getElementById("registrationForm"),msg=document.getElementById("message");
+form.addEventListener("submit",async e=>{
+ e.preventDefault(); msg.className="form-message show"; msg.textContent="Enviando...";
+ const f=new FormData(form),data=Object.fromEntries(f.entries());
+ data.weight_kg=Number(data.weight_kg); data.consent_lgpd=true;
+ data.payment_status="Confirmado"; data.registration_status="Inscrição recebida";
+ const {data:row,error}=await supabaseClient.from("registrations").insert(data).select("protocol").single();
+ if(error){msg.textContent="Não foi possível enviar agora. Confira os dados ou fale com a organização.";return;}
+ form.reset(); msg.textContent="Inscrição recebida! Seu protocolo é "+row.protocol+". Guarde este número e aguarde a confirmação da organização.";
+});
+</script>
+</body></html>
