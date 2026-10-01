@@ -1,23 +1,33 @@
-# Copinha Red Hell Kids
+# 3ª Copinha Red Hell Jiu-Jitsu Kids
 
-Site oficial da Copinha Red Hell Kids.
+Site da 3ª Copinha Red Hell Jiu-Jitsu Kids, em Imbé/RS.
 
-> Mais que competição, é aprendizado, respeito e evolução no tatame e na vida.
+## Informações oficiais
 
-## Estrutura
+- **Data:** 08 de novembro de 2026
+- **Local:** Rua Bom Jesus, 14, Centro — Imbé/RS
+- **Participação:** todas as academias
+- **Valor:** R$ 50,00
+- **Inscrições até:** 23 de outubro de 2026
+- **WhatsApp:** (51) 99626-0201
+- **Instagram:** @redehellimbe
+
+## Processo de inscrição
+
+1. O atleta/responsável realiza o pagamento de R$ 50,00 diretamente na academia ou pelo contato oficial.
+2. Após a confirmação do pagamento, a organização envia o link de inscrição.
+3. O responsável preenche o link para efetivar a inscrição.
+
+## Regulamento e divisões
+
+O regulamento técnico seguirá as regras da **IBJJF**. As divisões de idade, peso e sexo seguirão as referências da IBJJF para as categorias correspondentes.
+
+A página disponibiliza acesso ao material oficial de regras da IBJJF:
+https://ibjjf.com/books-videos
+
+## Arquivos
 
 - `index.html` — página principal
 - `styles.css` — identidade visual e responsividade
-- `script.js` — menu mobile, ano automático e pré-inscrição
-- `.github/workflows/pages.yml` — workflow preparado para GitHub Pages
-
-## Informações que ainda precisam ser confirmadas pela organização
-
-- Data do evento
-- Local/endereço
-- Canal oficial de contato/inscrição
-- Método de pagamento
-- Regulamento completo
-- Divisões exatas de idade, peso e sexo
-
-O valor informado nesta versão é **R$ 50,00**, conforme definido para a Copinha.
+- `script.js` — menu mobile e comportamento básico
+- `.github/workflows/pages.yml` — publicação no GitHub Pages
