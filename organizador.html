@@ -38,6 +38,6 @@ document.querySelector("#table tbody").addEventListener("click",async e=>{
  }
 });
 async function check(){const {data:{session}}=await supabaseClient.auth.getSession();if(session){const {data:org}=await supabaseClient.from("organizers").select("user_id").eq("user_id",session.user.id).maybeSingle();if(org){login.hidden=true;dash.hidden=false;await load();return;}}login.hidden=false;dash.hidden=true}
-document.getElementById("loginForm").addEventListener("submit",async e=>{e.preventDefault();lm.className="form-message show";const {error}=await supabaseClient.auth.signInWithPassword({email:email.value,password:password.value});if(error){lm.textContent="E-mail ou senha inválidos.";return}check()});
+document.getElementById("loginForm").addEventListener("submit",async e=>{e.preventDefault();lm.className="form-message show";const loginEmail=document.getElementById("email").value.trim();const loginPassword=document.getElementById("password").value;const {error}=await supabaseClient.auth.signInWithPassword({email:loginEmail,password:loginPassword});if(error){console.error(error);lm.textContent="E-mail ou senha inválidos.";return}check()});
 document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();check()});document.getElementById("refresh").addEventListener("click",load);check();
 </script></body></html>
