@@ -13,19 +13,29 @@ async function load(){
  document.querySelector("#stats").textContent=data.length+" inscrição(ões)";
  document.querySelector("#table tbody").innerHTML=data.map(r=>{
   const confirmed=r.payment_status==="Confirmado";
-  return '<tr><td>'+r.protocol+'</td><td>'+r.athlete_name+'</td><td>'+r.academy+'</td><td>'+r.belt+'</td><td>'+(r.weight_kg||"—")+' kg</td><td>'+r.responsible_name+'<br>'+r.responsible_phone+'</td><td>'+r.registration_status+'</td><td>'+r.payment_status+'</td><td>'+(
-   confirmed ? '<span style="white-space:nowrap">✅ Confirmado</span>' :
-   '<button type="button" class="btn btn-primary confirm-payment" data-id="'+r.id+'" style="white-space:nowrap;padding:8px 12px;font-size:12px">Confirmar pagamento</button>'
+  return '<tr><td>'+r.protocol+'</td><td>'+r.athlete_name+'</td><td>'+r.academy+'</td><td>'+r.belt+'</td><td>'+(r.weight_kg||"—")+' kg</td><td>'+r.responsible_name+'<br>'+r.responsible_phone+'</td><td>'+r.registration_status+'</td><td>'+r.payment_status+'</td><td style="white-space:nowrap">'+(
+   confirmed ? '<span>✅ Confirmado</span>' :
+   '<button type="button" class="btn btn-primary confirm-payment" data-id="'+r.id+'" style="padding:8px 12px;font-size:12px;margin-right:6px">Confirmar</button><button type="button" class="btn btn-ghost delete-registration" data-id="'+r.id+'" style="padding:8px 12px;font-size:12px">Excluir</button>'
   )+'</td></tr>';
  }).join("");
 }
 document.querySelector("#table tbody").addEventListener("click",async e=>{
- const btn=e.target.closest(".confirm-payment"); if(!btn)return;
- if(!confirm("Confirmar o pagamento desta inscrição?"))return;
- btn.disabled=true; btn.textContent="Confirmando...";
- const {error}=await supabaseClient.from("registrations").update({payment_status:"Confirmado"}).eq("id",btn.dataset.id);
- if(error){btn.disabled=false;btn.textContent="Confirmar pagamento";alert("Não foi possível confirmar o pagamento.");return;}
- await load();
+ const confirmBtn=e.target.closest(".confirm-payment");
+ if(confirmBtn){
+  if(!confirm("Confirmar o pagamento desta inscrição?"))return;
+  confirmBtn.disabled=true; confirmBtn.textContent="Confirmando...";
+  const {error}=await supabaseClient.from("registrations").update({payment_status:"Confirmado"}).eq("id",confirmBtn.dataset.id);
+  if(error){confirmBtn.disabled=false;confirmBtn.textContent="Confirmar";alert("Não foi possível confirmar o pagamento.");return;}
+  await load(); return;
+ }
+ const deleteBtn=e.target.closest(".delete-registration");
+ if(deleteBtn){
+  if(!confirm("Excluir definitivamente esta inscrição porque o pagamento não foi realizado?"))return;
+  deleteBtn.disabled=true; deleteBtn.textContent="Excluindo...";
+  const {error}=await supabaseClient.from("registrations").delete().eq("id",deleteBtn.dataset.id);
+  if(error){deleteBtn.disabled=false;deleteBtn.textContent="Excluir";alert("Não foi possível excluir a inscrição.");return;}
+  await load();
+ }
 });
 async function check(){const {data:{session}}=await supabaseClient.auth.getSession();if(session){const {data:org}=await supabaseClient.from("organizers").select("user_id").eq("user_id",session.user.id).maybeSingle();if(org){login.hidden=true;dash.hidden=false;await load();return;}}login.hidden=false;dash.hidden=true}
 document.getElementById("loginForm").addEventListener("submit",async e=>{e.preventDefault();lm.className="form-message show";const {error}=await supabaseClient.auth.signInWithPassword({email:email.value,password:password.value});if(error){lm.textContent="E-mail ou senha inválidos.";return}check()});
