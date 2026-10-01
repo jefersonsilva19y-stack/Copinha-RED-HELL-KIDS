@@ -13,7 +13,18 @@
 <div class="container narrow">
 <span class="section-kicker">INSCRIÇÃO OFICIAL</span>
 <h2>Cadastro do atleta<br><em>3ª Copinha Red Hell Kids</em></h2>
-<p class="lead">Preencha os dados abaixo. O pagamento de R$ 50,00 já deve ter sido confirmado pela organização antes do preenchimento deste link.</p>
+
+<div style="margin:22px 0;padding:20px;border:1px solid rgba(255,255,255,.15);border-radius:12px;background:rgba(255,255,255,.04)">
+<strong style="display:block;font-size:18px;margin-bottom:8px">💠 Inscrição: R$ 50,00</strong>
+<p style="margin:0 0 12px;color:#aaa">Faça o pagamento pelo PIX e depois preencha o formulário abaixo.</p>
+<div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">
+<code id="pixKey" style="font-size:17px;padding:10px 12px;border-radius:8px;background:#111">51982330187</code>
+<button type="button" class="btn" id="copyPix" style="margin:0">Copiar chave PIX</button>
+</div>
+<div id="pixMessage" style="margin-top:8px;color:#aaa;font-size:14px"></div>
+</div>
+
+<p class="lead">Após realizar o pagamento, preencha os dados abaixo. A organização irá conferir o pagamento e confirmar a inscrição.</p>
 <form id="registrationForm" class="registration-form">
 <div class="form-row"><label>Nome completo do atleta<input name="athlete_name" required></label><label>Data de nascimento<input name="birth_date" type="date" required></label></div>
 <div class="form-row"><label>Sexo<select name="sex" required><option value="">Selecione</option><option>Masculino</option><option>Feminino</option></select></label><label>Academia<input name="academy" required></label></div>
@@ -27,11 +38,20 @@
 </div></main>
 <script>
 const form=document.getElementById("registrationForm"),msg=document.getElementById("message");
+const copyPix=document.getElementById("copyPix"),pixMessage=document.getElementById("pixMessage");
+copyPix.addEventListener("click",async()=>{
+ try{
+  await navigator.clipboard.writeText("51982330187");
+  pixMessage.textContent="Chave PIX copiada!";
+ }catch(e){
+  pixMessage.textContent="Não foi possível copiar automaticamente. Use a chave: 51982330187";
+ }
+});
 form.addEventListener("submit",async e=>{
  e.preventDefault(); msg.className="form-message show"; msg.textContent="Enviando...";
  const f=new FormData(form),data=Object.fromEntries(f.entries());
  data.weight_kg=Number(data.weight_kg); data.consent_lgpd=true;
- data.payment_status="Confirmado"; data.registration_status="Inscrição recebida";
+ data.payment_status="Pendente"; data.registration_status="Inscrição recebida";
  const {data:row,error}=await supabaseClient.from("registrations").insert(data).select("protocol").single();
  if(error){msg.textContent="Não foi possível enviar agora. Confira os dados ou fale com a organização.";return;}
  form.reset(); msg.textContent="Inscrição recebida! Seu protocolo é "+row.protocol+". Guarde este número e aguarde a confirmação da organização.";
