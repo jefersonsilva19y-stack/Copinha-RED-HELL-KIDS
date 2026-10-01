@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Copinha Red Hell Kids — mais que competição, aprendizado, respeito e evolução no tatame e na vida.">
+  <meta name="theme-color" content="#0b0b0f">
+  <title>Copinha Red Hell Kids | Jiu-Jitsu</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <a class="brand" href="#inicio" aria-label="Copinha Red Hell Kids">
+      <span class="brand-mark">RH</span>
+      <span><strong>COPINHA</strong><small>RED HELL KIDS</small></span>
+    </a>
+    <button class="menu-toggle" aria-label="Abrir menu" aria-expanded="false">☰</button>
+    <nav class="nav" aria-label="Navegação principal">
+      <a href="#evento">Evento</a>
+      <a href="#categorias">Categorias</a>
+      <a href="#inscricao">Inscrição</a>
+      <a href="#duvidas">Dúvidas</a>
+    </nav>
+  </header>
+
+  <main id="inicio">
+    <section class="hero">
+      <div class="hero-grid"></div>
+      <div class="container hero-content">
+        <div class="eyebrow">JIU-JITSU INFANTIL • COMPETIÇÃO</div>
+        <h1>Copinha<br><span>Red Hell Kids</span></h1>
+        <p class="hero-text">Mais que competição, é <strong>aprendizado, respeito e evolução</strong> no tatame e na vida.</p>
+        <div class="hero-actions">
+          <a class="btn btn-primary" href="#inscricao">Quero me inscrever <span>→</span></a>
+          <a class="btn btn-ghost" href="#evento">Ver informações</a>
+        </div>
+        <div class="hero-meta">
+          <div><b>R$ 50</b><span>inscrição</span></div>
+          <div><b>KIDS</b><span>faixas permitidas</span></div>
+          <div><b>01</b><span>objetivo: evoluir</span></div>
+        </div>
+      </div>
+      <div class="tatami-lines" aria-hidden="true"></div>
+    </section>
+
+    <section class="ticker" aria-label="Mensagem do evento">
+      <div>RESPEITO • DISCIPLINA • CORAGEM • EVOLUÇÃO • JIU-JITSU • RESPEITO • DISCIPLINA • CORAGEM • EVOLUÇÃO</div>
+    </section>
+
+    <section id="evento" class="section">
+      <div class="container two-col">
+        <div>
+          <span class="section-kicker">SOBRE A COPINHA</span>
+          <h2>Um dia para competir,<br><em>aprender e crescer.</em></h2>
+          <p class="lead">A Copinha Red Hell Kids foi pensada para criar uma experiência de competição infantil com organização, respeito e espírito esportivo.</p>
+          <p>O foco não é apenas o resultado. É proporcionar às crianças a oportunidade de entrar no tatame, vencer desafios, aprender com cada luta e levar para a vida valores que o jiu-jitsu ensina.</p>
+        </div>
+        <div class="info-card">
+          <div class="info-row"><span>📅 Data</span><strong>EM BREVE</strong></div>
+          <div class="info-row"><span>📍 Local</span><strong>EM BREVE</strong></div>
+          <div class="info-row"><span>💰 Inscrição</span><strong>R$ 50,00</strong></div>
+          <div class="info-row"><span>🥋 Público</span><strong>Kids</strong></div>
+          <div class="info-note">Os dados de data e local serão atualizados assim que forem definidos.</div>
+        </div>
+      </div>
+    </section>
+
+    <section id="categorias" class="section dark-section">
+      <div class="container">
+        <div class="section-head">
+          <div>
+            <span class="section-kicker">CATEGORIAS</span>
+            <h2>Quem pode participar?</h2>
+          </div>
+          <p>Confira as faixas infantis contempladas nesta edição.</p>
+        </div>
+        <div class="belt-grid">
+          <article class="belt-card white"><span class="belt"></span><h3>Faixa Branca</h3><p>Categoria iniciante</p></article>
+          <article class="belt-card gray"><span class="belt"></span><h3>Faixa Cinza</h3><p>Categoria kids</p></article>
+          <article class="belt-card yellow"><span class="belt"></span><h3>Faixa Amarela</h3><p>Categoria kids</p></article>
+          <article class="belt-card orange"><span class="belt"></span><h3>Faixa Laranja</h3><p>Categoria kids</p></article>
+          <article class="belt-card green"><span class="belt"></span><h3>Faixa Verde</h3><p>Categoria kids</p></article>
+        </div>
+        <div class="notice">⚠️ As categorias de idade, peso, sexo e experiência serão divulgadas no regulamento oficial da edição.</div>
+      </div>
+    </section>
+
+    <section id="inscricao" class="section registration">
+      <div class="container registration-grid">
+        <div>
+          <span class="section-kicker">INSCRIÇÃO</span>
+          <h2>Garanta a participação<br><em>do seu atleta.</em></h2>
+          <p class="lead">Preencha os dados abaixo para deixar a inscrição organizada. O formulário desta primeira versão é preparado para integração com o canal oficial de inscrições.</p>
+          <div class="price-box"><span>Valor da inscrição</span><strong>R$ 50,00</strong></div>
+          <p class="small">Antes da abertura oficial, confira data, local e regulamento. Os dados desta página podem ser atualizados sem alterar o layout.</p>
+        </div>
+
+        <form class="registration-form" id="registrationForm">
+          <div class="form-title">Pré-inscrição</div>
+          <label>Nome do atleta<input name="athlete" required placeholder="Nome completo"></label>
+          <div class="form-row">
+            <label>Idade<input name="age" type="number" min="3" max="18" required placeholder="Ex.: 8"></label>
+            <label>Faixa
+              <select name="belt" required>
+                <option value="">Selecione</option>
+                <option>Branca</option><option>Cinza</option><option>Amarela</option><option>Laranja</option><option>Verde</option>
+              </select>
+            </label>
+          </div>
+          <label>Nome do responsável<input name="guardian" required placeholder="Nome do responsável"></label>
+          <label>Contato do responsável<input name="phone" type="tel" required placeholder="(51) 99999-9999"></label>
+          <button class="btn btn-primary full" type="submit">Gerar pré-inscrição <span>→</span></button>
+          <p class="form-help">Ao enviar, os dados são apenas organizados para conferência e não são armazenados por este site.</p>
+          <div id="formMessage" class="form-message" role="status"></div>
+        </form>
+      </div>
+    </section>
+
+    <section id="duvidas" class="section faq-section">
+      <div class="container narrow">
+        <span class="section-kicker">DÚVIDAS</span>
+        <h2>Perguntas frequentes</h2>
+        <div class="faq-list">
+          <details><summary>Qual é o valor da inscrição?</summary><p>A inscrição está definida em <strong>R$ 50,00</strong> nesta edição.</p></details>
+          <details><summary>Quais faixas podem participar?</summary><p>A página contempla faixas branca, cinza, amarela, laranja e verde. A organização poderá ajustar as divisões no regulamento oficial.</p></details>
+          <details><summary>Onde será realizado?</summary><p>O local ainda está marcado como “Em breve” e será atualizado quando a organização confirmar.</p></details>
+          <details><summary>Como vou saber a categoria de peso e idade?</summary><p>As divisões detalhadas devem constar no regulamento oficial. A página está preparada para receber essas informações.</p></details>
+          <details><summary>O pagamento está disponível?</summary><p>O método de pagamento ainda não foi informado nesta versão. O site pode receber essa informação assim que definida.</p></details>
+        </div>
+      </div>
+    </section>
+
+    <section class="cta-section">
+      <div class="container cta">
+        <span class="section-kicker">RED HELL KIDS</span>
+        <h2>O primeiro passo também<br><em>faz parte da vitória.</em></h2>
+        <a class="btn btn-primary" href="#inscricao">Começar inscrição <span>→</span></a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div class="brand">
+        <span class="brand-mark">RH</span>
+        <span><strong>COPINHA</strong><small>RED HELL KIDS</small></span>
+      </div>
+      <p>© <span id="year"></span> Copinha Red Hell Kids. Jiu-jitsu, respeito e evolução.</p>
+      <a href="#inicio">Voltar ao topo ↑</a>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
