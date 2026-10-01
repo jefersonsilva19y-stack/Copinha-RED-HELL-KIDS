@@ -1,43 +1,227 @@
 <!doctype html>
-<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Portal do Organizador | Copinha Red Hell</title><link rel="stylesheet" href="styles.css"><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="supabase-config.js"></script></head>
-<body class="admin-page"><header class="site-header"><a class="brand" href="index.html"><span class="brand-mark">RH</span><span><strong>PORTAL</strong><small>ORGANIZADOR</small></span></a><button id="logout" class="btn btn-ghost">Sair</button></header>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Portal do Organizador | Copinha Red Hell</title>
+<link rel="stylesheet" href="styles.css">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-config.js"></script>
+<style>
+.admin-tabs{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:28px}
+.admin-tab{border:1px solid #444;background:#17171d;color:#fff;padding:12px 18px;font-weight:800;text-transform:uppercase;font-size:12px;cursor:pointer}
+.admin-tab.active{background:var(--red);border-color:var(--red)}
+.admin-panel{display:block}.admin-panel[hidden]{display:none}
+.bracket-tools{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px}
+.bracket-tools input,.bracket-tools select{width:100%;padding:12px;border:1px solid #33343b;background:#19191f;color:#fff}
+.confirmed-list{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;max-height:440px;overflow:auto;margin:15px 0}
+.athlete-option{display:flex;gap:10px;align-items:flex-start;background:#19191f;border:1px solid #292930;padding:12px;color:#fff;font-size:12px}
+.athlete-option small{display:block;color:#999;margin-top:3px}
+.bracket-list{display:grid;gap:10px;margin-bottom:28px}
+.bracket-item{display:flex;justify-content:space-between;gap:15px;align-items:center;background:#19191f;border:1px solid #292930;padding:15px;color:#fff}
+.bracket-item small{display:block;color:#999;margin-top:3px}
+.bracket-board{overflow:auto;padding-bottom:15px}
+.bracket-grid{display:flex;gap:18px;align-items:flex-start;min-width:max-content}
+.bracket-round{width:230px}
+.bracket-round h4{font-size:12px;text-transform:uppercase;letter-spacing:1px;color:#aaa;margin:0 0 12px}
+.match{background:#19191f;border:1px solid #33343b;margin-bottom:18px;box-shadow:5px 5px 0 rgba(229,27,35,.18)}
+.match-row{padding:10px;border-bottom:1px solid #303038;display:flex;justify-content:space-between;gap:8px;align-items:center;min-height:44px;color:#fff;font-size:12px}
+.match-row:last-child{border-bottom:0}
+.match-row.winner{background:rgba(34,150,71,.16)}
+.match-row.bye{color:#777}
+.match-row button{padding:5px 8px;font-size:10px;background:var(--red);color:#fff;border:0;cursor:pointer;font-weight:800}
+.match-meta{font-size:9px;color:#777;padding:7px 10px;border-bottom:1px solid #303038;text-transform:uppercase}
+@media(max-width:700px){.confirmed-list,.bracket-tools{grid-template-columns:1fr}.bracket-item{align-items:flex-start;flex-direction:column}}
+</style>
+</head>
+<body class="admin-page">
+<header class="site-header">
+<a class="brand" href="index.html"><span class="brand-mark">RH</span><span><strong>PORTAL</strong><small>ORGANIZADOR</small></span></a>
+<button id="logout" class="btn btn-ghost">Sair</button>
+</header>
 <main class="section"><div class="container">
-<div id="login"><span class="section-kicker">ACESSO RESTRITO</span><h2>Portal do<br><em>organizador</em></h2><form id="loginForm" class="registration-form" style="max-width:480px"><label>E-mail<input id="email" type="email" required></label><label>Senha<input id="password" type="password" required></label><button class="btn btn-primary full">Entrar</button><div id="loginMsg" class="form-message"></div></form></div>
-<div id="dashboard" hidden><div class="section-head"><div><span class="section-kicker">INSCRIÇÕES</span><h2>Atletas cadastrados</h2></div><button id="refresh" class="btn btn-primary">Atualizar</button></div><div class="info-card" style="overflow:auto"><div id="stats" style="margin-bottom:20px"></div><table id="table" style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th>Protocolo</th><th>Atleta</th><th>Academia</th><th>Faixa</th><th>Peso</th><th>Responsável</th><th>Status</th><th>Pagamento</th><th>Ação</th></tr></thead><tbody></tbody></table></div></div>
+<div id="login">
+<span class="section-kicker">ACESSO RESTRITO</span><h2>Portal do<br><em>organizador</em></h2>
+<form id="loginForm" class="registration-form" style="max-width:480px">
+<label>E-mail<input id="email" type="email" required></label>
+<label>Senha<input id="password" type="password" required></label>
+<button class="btn btn-primary full">Entrar</button><div id="loginMsg" class="form-message"></div>
+</form></div>
+
+<div id="dashboard" hidden>
+<div class="admin-tabs">
+<button class="admin-tab active" data-panel="inscricoes">Inscrições</button>
+<button class="admin-tab" data-panel="chaveamento">Chaveamento</button>
+</div>
+
+<section id="panel-inscricoes" class="admin-panel">
+<div class="section-head"><div><span class="section-kicker">INSCRIÇÕES</span><h2>Atletas cadastrados</h2></div><button id="refresh" class="btn btn-primary">Atualizar</button></div>
+<div class="info-card" style="overflow:auto"><div id="stats" style="margin-bottom:20px"></div>
+<table id="table" style="width:100%;border-collapse:collapse;font-size:13px"><thead><tr><th>Protocolo</th><th>Atleta</th><th>Academia</th><th>Faixa</th><th>Peso</th><th>Responsável</th><th>Status</th><th>Pagamento</th><th>Ação</th></tr></thead><tbody></tbody></table>
+</div></section>
+
+<section id="panel-chaveamento" class="admin-panel" hidden>
+<div class="section-head"><div><span class="section-kicker">CHAVEAMENTO</span><h2>Montar <em>chaves</em></h2><p>Somente inscrições com pagamento confirmado aparecem aqui.</p></div><button id="refreshBrackets" class="btn btn-primary">Atualizar</button></div>
+
+<div class="info-card" style="margin-bottom:30px">
+<div class="form-title">1. Escolha os atletas</div>
+<div class="bracket-tools">
+<label>Faixa<select id="filterBelt"><option value="">Todas as faixas</option><option>Branca</option><option>Cinza</option><option>Amarela</option><option>Laranja</option><option>Verde</option></select></label>
+<label>Sexo<select id="filterSex"><option value="">Todos</option><option>Masculino</option><option>Feminino</option></select></label>
+<label style="grid-column:1/-1">Nome da chave<input id="bracketName" placeholder="Ex.: Infantil 2015/2016 • Branca • Masculino • 30 kg"></label>
+</div>
+<div style="display:flex;gap:10px;flex-wrap:wrap">
+<button id="selectVisible" class="btn btn-ghost" type="button">Selecionar visíveis</button>
+<button id="clearSelected" class="btn btn-ghost" type="button">Limpar seleção</button>
+<span id="selectedCount" style="align-self:center;color:#aaa;font-size:12px">0 selecionados</span>
+</div>
+<div id="confirmedList" class="confirmed-list"></div>
+<button id="generateBracket" class="btn btn-primary full" type="button">Gerar chaveamento</button>
+<p class="form-help">O sistema cria oitavas/quartas/semifinais/final conforme o número de atletas e coloca folgas automaticamente quando necessário. A definição da categoria fica a cargo do organizador.</p>
+</div>
+
+<div class="info-card">
+<div class="form-title">2. Chaves criadas</div>
+<div id="bracketList" class="bracket-list"><div style="color:#999;font-size:12px">Nenhuma chave criada.</div></div>
+<div id="bracketBoard" class="bracket-board" hidden></div>
+</div>
+</section>
+</div>
 </div></main>
+
 <script>
 const login=document.getElementById("login"),dash=document.getElementById("dashboard"),lm=document.getElementById("loginMsg");
+let registrations=[], currentBracket=null;
+
+function esc(v){return String(v??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+function ageAt(dateStr){if(!dateStr)return "—";const d=new Date(dateStr+"T00:00:00"),t=new Date("2026-11-08T00:00:00");let a=t.getFullYear()-d.getFullYear();const m=t.getMonth()-d.getMonth();if(m<0||(m===0&&t.getDate()<d.getDate()))a--;return a;}
+function visibleConfirmed(){
+ const belt=document.getElementById("filterBelt").value,sex=document.getElementById("filterSex").value;
+ return registrations.filter(r=>r.payment_status==="Confirmado"&&(!belt||r.belt===belt)&&(!sex||r.sex===sex));
+}
+function updateSelectedCount(){document.getElementById("selectedCount").textContent=document.querySelectorAll(".athlete-check:checked").length+" selecionados";}
+function renderConfirmed(){
+ const list=document.getElementById("confirmedList"),data=visibleConfirmed();
+ if(!data.length){list.innerHTML='<div style="color:#999;font-size:12px;grid-column:1/-1">Nenhuma inscrição confirmada neste filtro.</div>';updateSelectedCount();return;}
+ list.innerHTML=data.map(r=>'<label class="athlete-option"><input class="athlete-check" type="checkbox" value="'+esc(r.id)+'"><span><strong>'+esc(r.athlete_name)+'</strong><small>'+esc(r.belt)+' • '+esc(r.sex)+' • '+esc(r.weight_kg||"—")+' kg • '+ageAt(r.birth_date)+' anos<br>'+esc(r.academy)+'</small></span></label>').join("");
+ document.querySelectorAll(".athlete-check").forEach(x=>x.addEventListener("change",updateSelectedCount));
+ updateSelectedCount();
+}
 async function load(){
  const {data,error}=await supabaseClient.from("registrations").select("*").order("created_at",{ascending:false});
  if(error){document.querySelector("#stats").textContent="Erro ao carregar inscrições.";return;}
- document.querySelector("#stats").textContent=data.length+" inscrição(ões)";
- document.querySelector("#table tbody").innerHTML=data.map(r=>{
+ registrations=data||[];
+ document.querySelector("#stats").textContent=registrations.length+" inscrição(ões) • "+registrations.filter(r=>r.payment_status==="Confirmado").length+" pagamento(s) confirmado(s)";
+ document.querySelector("#table tbody").innerHTML=registrations.map(r=>{
   const confirmed=r.payment_status==="Confirmado";
-  return '<tr><td>'+r.protocol+'</td><td>'+r.athlete_name+'</td><td>'+r.academy+'</td><td>'+r.belt+'</td><td>'+(r.weight_kg||"—")+' kg</td><td>'+r.responsible_name+'<br>'+r.responsible_phone+'</td><td>'+r.registration_status+'</td><td>'+r.payment_status+'</td><td style="white-space:nowrap">'+(
-   confirmed ? '<span>✅ Confirmado</span>' :
-   '<button type="button" class="btn btn-primary confirm-payment" data-id="'+r.id+'" style="padding:8px 12px;font-size:12px;margin-right:6px">Confirmar</button><button type="button" class="btn btn-ghost delete-registration" data-id="'+r.id+'" style="padding:8px 12px;font-size:12px">Excluir</button>'
-  )+'</td></tr>';
+  return '<tr><td>'+esc(r.protocol)+'</td><td>'+esc(r.athlete_name)+'</td><td>'+esc(r.academy)+'</td><td>'+esc(r.belt)+'</td><td>'+(r.weight_kg||"—")+' kg</td><td>'+esc(r.responsible_name)+'<br>'+esc(r.responsible_phone)+'</td><td>'+esc(r.registration_status)+'</td><td>'+esc(r.payment_status)+'</td><td style="white-space:nowrap">'+(confirmed?'<span>✅ Confirmado</span>':'<button type="button" class="btn btn-primary confirm-payment" data-id="'+r.id+'" style="padding:8px 12px;font-size:12px;margin-right:6px">Confirmar</button><button type="button" class="btn btn-ghost delete-registration" data-id="'+r.id+'" style="padding:8px 12px;font-size:12px">Excluir</button>')+'</td></tr>';
  }).join("");
+ renderConfirmed();
+ await loadBrackets();
 }
 document.querySelector("#table tbody").addEventListener("click",async e=>{
  const confirmBtn=e.target.closest(".confirm-payment");
- if(confirmBtn){
-  if(!confirm("Confirmar o pagamento desta inscrição?"))return;
-  confirmBtn.disabled=true; confirmBtn.textContent="Confirmando...";
-  const {error}=await supabaseClient.from("registrations").update({payment_status:"Confirmado"}).eq("id",confirmBtn.dataset.id);
-  if(error){confirmBtn.disabled=false;confirmBtn.textContent="Confirmar";alert("Não foi possível confirmar o pagamento.");return;}
-  await load(); return;
- }
+ if(confirmBtn){if(!confirm("Confirmar o pagamento desta inscrição?"))return;confirmBtn.disabled=true;confirmBtn.textContent="Confirmando...";const {error}=await supabaseClient.from("registrations").update({payment_status:"Confirmado",registration_status:"Confirmada"}).eq("id",confirmBtn.dataset.id);if(error){confirmBtn.disabled=false;confirmBtn.textContent="Confirmar";alert("Não foi possível confirmar o pagamento.");return;}await load();return;}
  const deleteBtn=e.target.closest(".delete-registration");
- if(deleteBtn){
-  if(!confirm("Excluir definitivamente esta inscrição porque o pagamento não foi realizado?"))return;
-  deleteBtn.disabled=true; deleteBtn.textContent="Excluindo...";
-  const {error}=await supabaseClient.from("registrations").delete().eq("id",deleteBtn.dataset.id);
-  if(error){deleteBtn.disabled=false;deleteBtn.textContent="Excluir";alert("Não foi possível excluir a inscrição.");return;}
-  await load();
- }
+ if(deleteBtn){if(!confirm("Excluir definitivamente esta inscrição porque o pagamento não foi realizado?"))return;deleteBtn.disabled=true;deleteBtn.textContent="Excluindo...";const {error}=await supabaseClient.from("registrations").delete().eq("id",deleteBtn.dataset.id);if(error){deleteBtn.disabled=false;deleteBtn.textContent="Excluir";alert("Não foi possível excluir a inscrição.");return;}await load();}
 });
-async function check(){const {data:{session}}=await supabaseClient.auth.getSession();if(session){const {data:org}=await supabaseClient.from("organizers").select("user_id").eq("user_id",session.user.id).maybeSingle();if(org){login.hidden=true;dash.hidden=false;await load();return;}}login.hidden=false;dash.hidden=true}
-document.getElementById("loginForm").addEventListener("submit",async e=>{e.preventDefault();lm.className="form-message show";const loginEmail=document.getElementById("email").value.trim();const loginPassword=document.getElementById("password").value;const {error}=await supabaseClient.auth.signInWithPassword({email:loginEmail,password:loginPassword});if(error){console.error(error);lm.textContent="E-mail ou senha inválidos.";return}check()});
-document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();check()});document.getElementById("refresh").addEventListener("click",load);check();
-</script></body></html>
+
+async function loadBrackets(){
+ const {data,error}=await supabaseClient.from("brackets").select("*").order("created_at",{ascending:false});
+ const el=document.getElementById("bracketList");
+ if(error){el.innerHTML='<div style="color:#f66;font-size:12px">Erro ao carregar chaves.</div>';return;}
+ if(!data?.length){el.innerHTML='<div style="color:#999;font-size:12px">Nenhuma chave criada.</div>';document.getElementById("bracketBoard").hidden=true;return;}
+ el.innerHTML=data.map(b=>'<div class="bracket-item"><div><strong>'+esc(b.name)+'</strong><small>'+esc(b.category||"")+' • '+esc(b.status)+'</small></div><div style="display:flex;gap:8px"><button class="btn btn-primary view-bracket" data-id="'+b.id+'" style="padding:8px 12px;font-size:11px">Abrir</button><button class="btn btn-ghost delete-bracket" data-id="'+b.id+'" style="padding:8px 12px;font-size:11px">Excluir</button></div></div>').join("");
+}
+async function openBracket(id){
+ const {data:b,error:be}=await supabaseClient.from("brackets").select("*").eq("id",id).single();
+ if(be){alert("Não foi possível abrir a chave.");return;}
+ const {data:m,error:me}=await supabaseClient.from("bracket_matches").select("*").eq("bracket_id",id).order("round").order("match_number");
+ if(me){alert("Não foi possível carregar as lutas.");return;}
+ currentBracket={...b,matches:m||[]};renderBoard();
+}
+function roundName(round,total){if(round===total)return "Final";if(round===total-1)return "Semifinais";if(round===total-2)return "Quartas de final";if(round===total-3)return "Oitavas de final";return "Rodada "+round;}
+function athleteName(id){const r=registrations.find(x=>x.id===id);return r?r.athlete_name:"A definir";}
+function renderBoard(){
+ const board=document.getElementById("bracketBoard");board.hidden=false;
+ const matches=currentBracket.matches,total=Math.max(...matches.map(m=>m.round));
+ const rounds=Array.from({length:total},(_,i)=>i+1);
+ board.innerHTML='<h3 style="color:#fff;margin:0 0 18px">'+esc(currentBracket.name)+'</h3><div class="bracket-grid">'+rounds.map(round=>{
+  const ms=matches.filter(m=>m.round===round);
+  return '<div class="bracket-round"><h4>'+roundName(round,total)+'</h4>'+ms.map(m=>{
+   const a1=m.athlete1_id?athleteName(m.athlete1_id):"A definir",a2=m.athlete2_id?athleteName(m.athlete2_id):"A definir";
+   return '<div class="match"><div class="match-meta">Luta '+m.match_number+'</div><div class="match-row '+(m.winner_id===m.athlete1_id&&m.winner_id?"winner":"")+'">'+esc(a1)+(m.athlete1_id&&m.status==="Pendente"&&m.athlete2_id?'<button class="win-btn" data-match="'+m.id+'" data-winner="'+m.athlete1_id+'">VENCEU</button>':"")+'</div><div class="match-row '+(m.winner_id===m.athlete2_id&&m.winner_id?"winner":"")+'">'+esc(a2)+(m.athlete2_id&&m.status==="Pendente"&&m.athlete1_id?'<button class="win-btn" data-match="'+m.id+'" data-winner="'+m.athlete2_id+'">VENCEU</button>':"")+'</div></div>';
+  }).join("")+'</div>';
+ }).join("")+'</div>';
+}
+async function finishMatch(matchId,winnerId){
+ const match=currentBracket.matches.find(m=>m.id===matchId);if(!match||!match.athlete1_id||!match.athlete2_id)return;
+ const {error}=await supabaseClient.from("bracket_matches").update({winner_id:winnerId,status:"Finalizada"}).eq("id",matchId);
+ if(error){alert("Não foi possível registrar o vencedor.");return;}
+ if(match.next_match_id){
+  const next=currentBracket.matches.find(m=>m.id===match.next_match_id);
+  if(next){
+   const slot=match.match_number%2===1?"athlete1_id":"athlete2_id";
+   await supabaseClient.from("bracket_matches").update({[slot]:winnerId}).eq("id",next.id);
+  }
+ }
+ await openBracket(currentBracket.id);
+}
+document.getElementById("bracketList").addEventListener("click",async e=>{
+ const view=e.target.closest(".view-bracket");if(view){await openBracket(view.dataset.id);return;}
+ const del=e.target.closest(".delete-bracket");if(del){if(!confirm("Excluir esta chave e todas as suas lutas?"))return;const {error}=await supabaseClient.from("brackets").delete().eq("id",del.dataset.id);if(error){alert("Não foi possível excluir a chave.");return;}if(currentBracket?.id===del.dataset.id){currentBracket=null;document.getElementById("bracketBoard").hidden=true;}await loadBrackets();}
+});
+document.getElementById("bracketBoard").addEventListener("click",e=>{const b=e.target.closest(".win-btn");if(b)finishMatch(b.dataset.match,b.dataset.winner);});
+
+document.getElementById("generateBracket").addEventListener("click",async()=>{
+ const ids=[...document.querySelectorAll(".athlete-check:checked")].map(x=>x.value);
+ if(ids.length<2){alert("Selecione pelo menos 2 atletas confirmados.");return;}
+ if(ids.length>64){alert("Selecione no máximo 64 atletas por chave.");return;}
+ const name=document.getElementById("bracketName").value.trim()||"Chave sem nome";
+ const selected=ids.map(id=>registrations.find(r=>r.id===id)).filter(Boolean);
+ const {data:b,error:be}=await supabaseClient.from("brackets").insert({name,category:selected.map(r=>r.belt+" • "+r.sex).filter((v,i,a)=>a.indexOf(v)===i).join(" / "),created_by:(await supabaseClient.auth.getUser()).data.user.id}).select("*").single();
+ if(be){alert("Não foi possível criar a chave: "+be.message);return;}
+ let size=1;while(size<ids.length)size*=2;const totalRounds=Math.log2(size);
+ let rows=[],currentSlots=[...ids];
+ while(currentSlots.length<size)currentSlots.push(null);
+ let previous=[];
+ for(let round=1;round<=totalRounds;round++){
+  const count=size/Math.pow(2,round);
+  for(let i=0;i<count;i++){
+   const m={bracket_id:b.id,round,match_number:i+1,athlete1_id:round===1?currentSlots[i*2]:null,athlete2_id:round===1?currentSlots[i*2+1]:null,status:"Pendente"};
+   rows.push(m);previous.push(m);
+  }
+  currentSlots=new Array(count).fill(null);
+ }
+ const {data:created,error:me}=await supabaseClient.from("bracket_matches").insert(rows).select("*");
+ if(me){await supabaseClient.from("brackets").delete().eq("id",b.id);alert("Não foi possível criar as lutas: "+me.message);return;}
+ const all=created.sort((a,b)=>a.round-b.round||a.match_number-b.match_number);
+ for(const m of all.filter(x=>x.round<totalRounds)){
+  const next=all.find(x=>x.round===m.round+1&&x.match_number===Math.ceil(m.match_number/2));
+  if(next)await supabaseClient.from("bracket_matches").update({next_match_id:next.id}).eq("id",m.id);
+ }
+ // Avança automaticamente as folgas.
+ for(const m of all.filter(x=>x.round===1)){
+  if(m.athlete1_id&&!m.athlete2_id){await supabaseClient.from("bracket_matches").update({winner_id:m.athlete1_id,status:"Finalizada"}).eq("id",m.id);const next=all.find(x=>x.round===2&&x.match_number===Math.ceil(m.match_number/2));if(next)await supabaseClient.from("bracket_matches").update({athlete1_id:m.athlete1_id}).eq("id",next.id);}
+  if(!m.athlete1_id&&m.athlete2_id){await supabaseClient.from("bracket_matches").update({winner_id:m.athlete2_id,status:"Finalizada"}).eq("id",m.id);const next=all.find(x=>x.round===2&&x.match_number===Math.ceil(m.match_number/2));if(next)await supabaseClient.from("bracket_matches").update({athlete2_id:m.athlete2_id}).eq("id",next.id);}
+ }
+ document.getElementById("bracketName").value="";
+ document.querySelectorAll(".athlete-check").forEach(x=>x.checked=false);updateSelectedCount();
+ await loadBrackets();await openBracket(b.id);
+});
+["filterBelt","filterSex"].forEach(id=>document.getElementById(id).addEventListener("change",renderConfirmed));
+document.getElementById("selectVisible").addEventListener("click",()=>{document.querySelectorAll(".athlete-check").forEach(x=>x.checked=true);updateSelectedCount();});
+document.getElementById("clearSelected").addEventListener("click",()=>{document.querySelectorAll(".athlete-check").forEach(x=>x.checked=false);updateSelectedCount();});
+document.querySelectorAll(".admin-tab").forEach(btn=>btn.addEventListener("click",()=>{document.querySelectorAll(".admin-tab").forEach(x=>x.classList.remove("active"));document.querySelectorAll(".admin-panel").forEach(x=>x.hidden=true);btn.classList.add("active");document.getElementById("panel-"+btn.dataset.panel).hidden=false;}));
+
+async function check(){
+ const {data:{session}}=await supabaseClient.auth.getSession();
+ if(session){const {data:org}=await supabaseClient.from("organizers").select("user_id").eq("user_id",session.user.id).maybeSingle();if(org){login.hidden=true;dash.hidden=false;await load();return;}}
+ login.hidden=false;dash.hidden=true;
+}
+document.getElementById("loginForm").addEventListener("submit",async e=>{e.preventDefault();lm.className="form-message show";const loginEmail=document.getElementById("email").value.trim(),loginPassword=document.getElementById("password").value;const {error}=await supabaseClient.auth.signInWithPassword({email:loginEmail,password:loginPassword});if(error){console.error(error);lm.textContent="E-mail ou senha inválidos.";return}check();});
+document.getElementById("logout").addEventListener("click",async()=>{await supabaseClient.auth.signOut();check();});
+document.getElementById("refresh").addEventListener("click",load);
+document.getElementById("refreshBrackets").addEventListener("click",load);
+check();
+</script>
+</body></html>
