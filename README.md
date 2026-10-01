@@ -10,7 +10,7 @@ Site da 3ª Copinha Red Hell Jiu-Jitsu Kids, em Imbé/RS.
 - **Valor:** R$ 50,00
 - **Inscrições até:** 23 de outubro de 2026
 - **WhatsApp:** (51) 99626-0201
-- **Instagram:** @redehellimbe
+- **Instagram:** @redhelljiujitsu
 
 ## Processo de inscrição
 
